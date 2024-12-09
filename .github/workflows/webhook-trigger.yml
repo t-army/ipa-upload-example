@@ -11,21 +11,30 @@ jobs:
 
     steps:
       - name: Set Global Variable
-        run: echo "MY_VARIABLE=dynamic_value" >> $GITHUB_ENV
+        run: |
+          MY_VARIABLE=${{ github.event.client_payload.key1 }}
+          echo "::add-mask::$MY_VARIABLE"
+          echo MY_VARIABLE=$MY_VARIABLE >> $GITHUB_ENV
 
       - name: Use Global Variable in Another Step
         run: echo "The value of MY_VARIABLE is $MY_VARIABLE"
 
-      - name: Mask the Secret
-        run: |
-          echo "::add-mask::${{ github.event.client_payload.key1 }}"
-          echo "Secret received and masked."
+      # - name: Set Global Variable
+      #   run: echo "MY_VARIABLE=dynamic_value" >> $GITHUB_ENV
 
-      - name: Print Payload
-        env:
-          MY_SECRET: ${{ github.event.client_payload.key1 }}
-        run: |
-          echo "Received payload: $MY_SECRET"
+      # - name: Use Global Variable in Another Step
+      #   run: echo "The value of MY_VARIABLE is $MY_VARIABLE"
+
+      # - name: Mask the Secret
+      #   run: |
+      #     echo "::add-mask::${{ github.event.client_payload.key1 }}"
+      #     echo "Secret received and masked."
+
+      # - name: Print Payload
+      #   env:
+      #     MY_SECRET: ${{ github.event.client_payload.key1 }}
+      #   run: |
+      #     echo "Received payload: $MY_SECRET"
 
       # - name: Print Payload
       #   run: |
