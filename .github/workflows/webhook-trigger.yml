@@ -1,0 +1,41 @@
+name: Webhook Triggered Workflow
+
+on:
+  repository_dispatch:
+    types:
+      - webhook
+
+jobs:
+  run-webhook-job:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Print Payload
+        run: |
+          echo "Received payload: ${{ toJson(github.event.client_payload) }}"
+
+      # - name: Import code sign
+      #   uses: Apple-Actions/import-codesign-certs@v1
+      #   with:
+      #     p12-file-base64: ${{ secrets.APPSTORE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+      #     p12-password: ${{ secrets.APPSTORE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+
+      # - name: Download provisioning
+      #   uses: Apple-Actions/download-provisioning-profiles@v1
+      #   with:
+      #     bundle-id: ${{ env.APP_BUNDLE_ID }}
+      #     issuer-id: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+
+      # - name: Upload app to TestFlight
+      #   if: ${{ github.event.inputs.publish == 'true' }}
+      #   uses: Apple-Actions/upload-testflight-build@v1
+      #   with:
+      #     app-path: ios/build/${{ env.APP_NAME }}.ipa
+      #     issuer-id: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
