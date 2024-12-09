@@ -26,14 +26,25 @@ jobs:
         run: |
           curl -o app.ipa "${{ github.event.client_payload.IPA_FILE_URL }}"
 
+      #- name: Upload app to TestFlight
+      #  id: upload-tf
+      #  uses: Apple-Actions/upload-testflight-build@v1
+      #  with:
+      #    app-path: app.ipa
+      #    issuer-id: ${{ env.APPSTORE_CONNECT_ISSUER_ID }}
+      #    api-key-id: ${{ env.APPSTORE_CONNECT_KEY_ID }}
+      #    api-private-key: ${{ env.APPSTORE_CONNECT_PRIVATE_KEY }}
+      #  continue-on-error: true
+
+      - name: Install private API key P8
+        run: |
+          mkdir -p ~/private_keys
+          echo -n "$APPSTORE_CONNECT_PRIVATE_KEY" | base64 --decode --output ~/private_keys/AuthKey_$APPSTORE_CONNECT_KEY_ID.p8
+
       - name: Upload app to TestFlight
         id: upload-tf
-        uses: Apple-Actions/upload-testflight-build@v1
-        with:
-          app-path: app.ipa
-          issuer-id: ${{ env.APPSTORE_CONNECT_ISSUER_ID }}
-          api-key-id: ${{ env.APPSTORE_CONNECT_KEY_ID }}
-          api-private-key: ${{ env.APPSTORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          xcrun altool --output-format xml --upload-app -f app.ipa -t ios --apiKey $APPSTORE_CONNECT_KEY_ID --apiIssuer $APPSTORE_CONNECT_ISSUER_ID
         continue-on-error: true
 
       - name: Check job exit code
