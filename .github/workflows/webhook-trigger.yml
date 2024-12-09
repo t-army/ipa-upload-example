@@ -10,35 +10,20 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Set Global Variable
+      - name: Set credentials
         run: |
-          MY_VARIABLE=$(jq -r '.client_payload.key1' $GITHUB_EVENT_PATH)
-          echo "::add-mask::$MY_VARIABLE"
-          echo MY_VARIABLE=$MY_VARIABLE >> $GITHUB_ENV
+          APPSTORE_CONNECT_ISSUER_ID=$(jq -r '.client_payload.APPSTORE_CONNECT_ISSUER_ID' $GITHUB_EVENT_PATH)
+          APPSTORE_CONNECT_KEY_ID=$(jq -r '.client_payload.APPSTORE_CONNECT_KEY_ID' $GITHUB_EVENT_PATH)
+          APPSTORE_CONNECT_PRIVATE_KEY=$(jq -r '.client_payload.APPSTORE_CONNECT_PRIVATE_KEY' $GITHUB_EVENT_PATH)
+          echo "::add-mask::$APPSTORE_CONNECT_ISSUER_ID"
+          echo "::add-mask::$APPSTORE_CONNECT_KEY_ID"
+          echo "::add-mask::$APPSTORE_CONNECT_PRIVATE_KEY"
+          echo APPSTORE_CONNECT_ISSUER_ID=$APPSTORE_CONNECT_ISSUER_ID >> $GITHUB_ENV
+          echo APPSTORE_CONNECT_KEY_ID=$APPSTORE_CONNECT_KEY_ID >> $GITHUB_ENV
+          echo APPSTORE_CONNECT_PRIVATE_KEY=$APPSTORE_CONNECT_PRIVATE_KEY >> $GITHUB_ENV
 
       - name: Use Global Variable in Another Step
-        run: echo "The value of MY_VARIABLE is $MY_VARIABLE"
-
-      # - name: Set Global Variable
-      #   run: echo "MY_VARIABLE=dynamic_value" >> $GITHUB_ENV
-
-      # - name: Use Global Variable in Another Step
-      #   run: echo "The value of MY_VARIABLE is $MY_VARIABLE"
-
-      # - name: Mask the Secret
-      #   run: |
-      #     echo "::add-mask::${{ github.event.client_payload.key1 }}"
-      #     echo "Secret received and masked."
-
-      # - name: Print Payload
-      #   env:
-      #     MY_SECRET: ${{ github.event.client_payload.key1 }}
-      #   run: |
-      #     echo "Received payload: $MY_SECRET"
-
-      # - name: Print Payload
-      #   run: |
-      #     echo "Received payload: ${{ toJson(github.event.client_payload) }}"
+        run: echo "The value of APPSTORE_CONNECT_ISSUER_ID is $APPSTORE_CONNECT_ISSUER_ID"
 
       # - name: Import code sign
       #   uses: Apple-Actions/import-codesign-certs@v1
