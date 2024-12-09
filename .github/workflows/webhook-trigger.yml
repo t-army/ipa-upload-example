@@ -26,16 +26,6 @@ jobs:
         run: |
           curl -o app.ipa "${{ github.event.client_payload.IPA_FILE_URL }}"
 
-      #- name: Upload app to TestFlight
-      #  id: upload-tf
-      #  uses: Apple-Actions/upload-testflight-build@v1
-      #  with:
-      #    app-path: app.ipa
-      #    issuer-id: ${{ env.APPSTORE_CONNECT_ISSUER_ID }}
-      #    api-key-id: ${{ env.APPSTORE_CONNECT_KEY_ID }}
-      #    api-private-key: ${{ env.APPSTORE_CONNECT_PRIVATE_KEY }}
-      #  continue-on-error: true
-
       - name: Install private API key P8
         run: |
           mkdir -p ~/private_keys
