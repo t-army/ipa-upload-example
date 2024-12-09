@@ -33,3 +33,11 @@ jobs:
           issuer-id: ${{ APPSTORE_CONNECT_ISSUER_ID }}
           api-key-id: ${{ APPSTORE_CONNECT_KEY_ID }}
           api-private-key: ${{ APPSTORE_CONNECT_PRIVATE_KEY }}
+
+      - name: Check job exit code
+        run: |
+          if [ "${{ github.exitCode }}" -ne 0 ]; then
+            echo "A step failed in this job!"
+          else
+            echo "All steps passed!"
+          fi
