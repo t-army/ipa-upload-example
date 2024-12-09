@@ -14,7 +14,7 @@ jobs:
         run: |
           APPSTORE_CONNECT_ISSUER_ID=$(jq -r '.client_payload.APPSTORE_CONNECT_ISSUER_ID' $GITHUB_EVENT_PATH)
           APPSTORE_CONNECT_KEY_ID=$(jq -r '.client_payload.APPSTORE_CONNECT_KEY_ID' $GITHUB_EVENT_PATH)
-          APPSTORE_CONNECT_PRIVATE_KEY=$(jq -r '.client_payload.APPSTORE_CONNECT_PRIVATE_KEY' $GITHUB_EVENT_PATH | base64 -d)
+          APPSTORE_CONNECT_PRIVATE_KEY=$(jq -r '.client_payload.APPSTORE_CONNECT_PRIVATE_KEY' $GITHUB_EVENT_PATH)
           echo "::add-mask::$APPSTORE_CONNECT_ISSUER_ID"
           echo "::add-mask::$APPSTORE_CONNECT_KEY_ID"
           echo "::add-mask::$APPSTORE_CONNECT_PRIVATE_KEY"
