@@ -1,12 +1,12 @@
-name: Webhook Triggered Workflow
+name: IPA Uploader
 
 on:
   repository_dispatch:
     types:
-      - webhook
+      - upload-ipa
 
 jobs:
-  run-webhook-job:
+  upload-testflight:
     runs-on: macos-latest
 
     steps:
@@ -14,7 +14,7 @@ jobs:
         run: |
           APPSTORE_CONNECT_ISSUER_ID=$(jq -r '.client_payload.APPSTORE_CONNECT_ISSUER_ID' $GITHUB_EVENT_PATH)
           APPSTORE_CONNECT_KEY_ID=$(jq -r '.client_payload.APPSTORE_CONNECT_KEY_ID' $GITHUB_EVENT_PATH)
-          APPSTORE_CONNECT_PRIVATE_KEY=$(jq -r '.client_payload.APPSTORE_CONNECT_PRIVATE_KEY' $GITHUB_EVENT_PATH)
+          APPSTORE_CONNECT_PRIVATE_KEY=$(jq -r '.client_payload.APPSTORE_CONNECT_PRIVATE_KEY' $GITHUB_EVENT_PATH | base64 -d)
           echo "::add-mask::$APPSTORE_CONNECT_ISSUER_ID"
           echo "::add-mask::$APPSTORE_CONNECT_KEY_ID"
           echo "::add-mask::$APPSTORE_CONNECT_PRIVATE_KEY"
@@ -22,28 +22,14 @@ jobs:
           echo APPSTORE_CONNECT_KEY_ID=$APPSTORE_CONNECT_KEY_ID >> $GITHUB_ENV
           echo APPSTORE_CONNECT_PRIVATE_KEY=$APPSTORE_CONNECT_PRIVATE_KEY >> $GITHUB_ENV
 
-      - name: Use Global Variable in Another Step
-        run: echo "The value of APPSTORE_CONNECT_ISSUER_ID is $APPSTORE_CONNECT_ISSUER_ID"
+      - name: Download IPA file
+        run: |
+          curl -o app.ipa "${{ github.event.client_payload.IPA_FILE_URL }}"
 
-      # - name: Import code sign
-      #   uses: Apple-Actions/import-codesign-certs@v1
-      #   with:
-      #     p12-file-base64: ${{ secrets.APPSTORE_DISTRIBUTION_CERTIFICATE_BASE64 }}
-      #     p12-password: ${{ secrets.APPSTORE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-
-      # - name: Download provisioning
-      #   uses: Apple-Actions/download-provisioning-profiles@v1
-      #   with:
-      #     bundle-id: ${{ env.APP_BUNDLE_ID }}
-      #     issuer-id: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-      #     api-key-id: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
-      #     api-private-key: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
-
-      # - name: Upload app to TestFlight
-      #   if: ${{ github.event.inputs.publish == 'true' }}
-      #   uses: Apple-Actions/upload-testflight-build@v1
-      #   with:
-      #     app-path: ios/build/${{ env.APP_NAME }}.ipa
-      #     issuer-id: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-      #     api-key-id: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
-      #     api-private-key: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+      - name: Upload app to TestFlight
+        uses: Apple-Actions/upload-testflight-build@v1
+        with:
+          app-path: app.ipa
+          issuer-id: ${{ APPSTORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ APPSTORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ APPSTORE_CONNECT_PRIVATE_KEY }}
