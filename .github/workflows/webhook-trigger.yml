@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Set Global Variable
         run: |
-          MY_VARIABLE=${{ github.event.client_payload.key1 }}
+          MY_VARIABLE=$(${{ github.event.client_payload.key1 }})
           echo "::add-mask::$MY_VARIABLE"
           echo MY_VARIABLE=$MY_VARIABLE >> $GITHUB_ENV
 
