@@ -27,6 +27,7 @@ jobs:
           curl -o app.ipa "${{ github.event.client_payload.IPA_FILE_URL }}"
 
       - name: Upload app to TestFlight
+        id: upload-tf
         uses: Apple-Actions/upload-testflight-build@v1
         with:
           app-path: app.ipa
@@ -37,8 +38,8 @@ jobs:
 
       - name: Check job exit code
         run: |
-          if [ "${{ github.exitCode }}" -ne 0 ]; then
-            echo "A step failed in this job!"
+          if [ "${{ steps.upload-tf.outcome }}" == "failure" ]; then
+            echo "Uploading process failed!"
           else
-            echo "All steps passed!"
+            echo "Uploading process success!"
           fi
