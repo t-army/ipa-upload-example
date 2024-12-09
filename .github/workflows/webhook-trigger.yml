@@ -10,17 +10,14 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Test
+      - name: Set Global Variable
         run: |
-          jq -r '.client_payload.key1' $GITHUB_EVENT_PATH
-      # - name: Set Global Variable
-      #   run: |
-      #     MY_VARIABLE=$(jq -r '.inputs.password' $GITHUB_EVENT_PATH)  $(echo ${{ github.event.client_payload.key1 }})
-      #     echo "::add-mask::$MY_VARIABLE"
-      #     echo MY_VARIABLE=$MY_VARIABLE >> $GITHUB_ENV
+          MY_VARIABLE=$(jq -r '.client_payload.key1' $GITHUB_EVENT_PATH)
+          echo "::add-mask::$MY_VARIABLE"
+          echo MY_VARIABLE=$MY_VARIABLE >> $GITHUB_ENV
 
-      # - name: Use Global Variable in Another Step
-      #   run: echo "The value of MY_VARIABLE is $MY_VARIABLE"
+      - name: Use Global Variable in Another Step
+        run: echo "The value of MY_VARIABLE is $MY_VARIABLE"
 
       # - name: Set Global Variable
       #   run: echo "MY_VARIABLE=dynamic_value" >> $GITHUB_ENV
